@@ -26,4 +26,8 @@ public class Punishment {
     private String reason;
 
     private String kind;
+
+    private String startDate;
+
+    private String endDate;
 }

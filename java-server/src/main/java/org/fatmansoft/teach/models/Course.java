@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(	name = "course",
-        uniqueConstraints = {
+        uniqueConstraints = {@UniqueConstraint(columnNames = "num"),
         })
 public class Course {
     @Id

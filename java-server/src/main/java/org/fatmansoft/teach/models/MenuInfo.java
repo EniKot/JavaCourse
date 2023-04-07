@@ -1,5 +1,9 @@
 package org.fatmansoft.teach.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 /**
@@ -9,6 +13,9 @@ import javax.validation.constraints.Size;
  * String name 菜单名  记录FXML的文件名，用于导航加载FX面板
  * String name 菜单标题 菜单显示的标题
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(	name = "menu",
         uniqueConstraints = {
@@ -24,47 +31,6 @@ public class MenuInfo {
     @Size(max = 40)
     private String name;
 
-
     @Size(max = 40)
     private String title;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getUserTypeId() {
-        return userTypeId;
-    }
-
-    public void setUserTypeId(Integer userTypeId) {
-        this.userTypeId = userTypeId;
-    }
-
-    public Integer getPid() {
-        return pid;
-    }
-
-    public void setPid(Integer pid) {
-        this.pid = pid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }

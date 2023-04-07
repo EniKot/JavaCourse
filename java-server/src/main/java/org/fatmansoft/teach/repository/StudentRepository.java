@@ -20,6 +20,7 @@ public interface StudentRepository extends JpaRepository<Student,Integer> {
     Integer getMaxId();
     Optional<Student> findByPersonPersonId(Integer personId);
     Optional<Student> findByPersonNum(String num);
+
     List<Student> findByPersonName(String name);
 
 

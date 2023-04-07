@@ -15,4 +15,5 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query(value = "select max(personId) from Person  ")
     Integer getMaxId();
     Optional<Person> findByNum(String num);
+    List<Person> findByName(String name);
 }

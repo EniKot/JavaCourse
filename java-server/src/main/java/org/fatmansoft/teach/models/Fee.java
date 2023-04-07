@@ -22,6 +22,7 @@ public class Fee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer feeId;
+
     private Integer studentId;
     private String day;
     private Double money;

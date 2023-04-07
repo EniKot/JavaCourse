@@ -27,7 +27,9 @@ public class CourseRecord {
 
 
     @OneToMany
-    @JoinTable(name="course_absence",joinColumns = @JoinColumn(name="record_id"),inverseJoinColumns = @JoinColumn(name="student_id"))
+    @JoinTable(name="course_absence",
+            joinColumns = @JoinColumn(name="record_id"),
+            inverseJoinColumns = @JoinColumn(name="student_id"))
     List<Student> absence;
 
 }

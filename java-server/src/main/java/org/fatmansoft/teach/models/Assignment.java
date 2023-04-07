@@ -28,6 +28,7 @@ public class Assignment {
     @JoinColumn(name="course_id")
     private Course course;
 
+    private String title;
     private String contents;
 
     private String deadline;

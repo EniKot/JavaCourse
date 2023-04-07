@@ -15,6 +15,7 @@ import java.util.List;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score,Integer> {
     List<Score> findByStudentStudentId(Integer studentId);
+
     @Query(value="from Score where (?1=0 or student.studentId=?1 and ?2=0 or course.courseId=?2)" )
     List<Score> findByStudentCourse(Integer studentId, Integer courseId);
 

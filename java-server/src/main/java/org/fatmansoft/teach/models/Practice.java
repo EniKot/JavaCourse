@@ -1,38 +1,30 @@
 package org.fatmansoft.teach.models;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
- * 活动记录实体类
+ * 创新实践类
  */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="activity",
-        uniqueConstraints = {
-        })
-public class Activity {
+@Table(name="practice")
+public class Practice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer activityId;
-
-    @ManyToOne
-    @JoinColumn(name="student_id")
-    private Student student;
+    private Integer practiceId;
 
     private String title;
-
-    private String location;
-
     private String content;
 
-    private String startTime;
-
-    private String endTime;
+    @OneToMany
+    @JoinColumn(name="student_id")
+    private List<Student> students;
 }

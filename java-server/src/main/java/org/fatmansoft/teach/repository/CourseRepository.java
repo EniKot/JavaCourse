@@ -20,7 +20,12 @@ public interface CourseRepository extends JpaRepository<Course,Integer> {
     Optional<Course> findByCourseId(Integer courseId);
 
     Optional<Course> findByNum(String num);
+
     List<Course> findByName(String name);
 
+    List<Course> findByTeacherTeacherId(Integer teacherId);
+
+    @Query(value= "select * from course where student_id in (select student_id from student_course where student_id=?1)",nativeQuery = true)
+    List<Course> findByStudentId(String studentId);
 
 }
