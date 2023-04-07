@@ -26,6 +26,4 @@ public class Fee {
     private Integer studentId;
     private String day;
     private Double money;
-
-
 }

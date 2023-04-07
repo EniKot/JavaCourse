@@ -24,7 +24,7 @@ public class Assignment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer assignmentId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="course_id")
     private Course course;
 

@@ -34,30 +34,6 @@ public class MainFrameController {
     @FXML
     protected TabPane contentTabPane;
 
-    void addMenuItems(Menu parent, List<Map> mList) {
-        String name, title;
-        List sList;
-        Map ms;
-        Menu menu;
-        MenuItem item;
-        for ( Map m :mList) {
-            sList = (List<Map>)m.get("sList");
-            name = (String)m.get("name");
-            title = (String)m.get("title");
-            if(sList == null || sList.size()== 0) {
-                item = new MenuItem();
-                item.setId(name);
-                item.setText(title);
-                item.setOnAction(this::changeContent);
-                parent.getItems().add(item);
-            }else {
-                menu = new Menu();
-                menu.setText(title);
-                addMenuItems(menu,sList);
-                parent.getItems().add(menu);
-            }
-        }
-    }
 
     /**
      * 页面加载对象创建完成初始话方法，页面中控件属性的设置，初始数据显示等初始操作都在这里完成，其他代码都事件处理方法里
@@ -74,42 +50,33 @@ public class MainFrameController {
         menu = new Menu("个人信息");
         item = new MenuItem();
         item.setText("修改密码");
-        item.setId("base/password-panel");
-        item.setOnAction(this::changeContent);
+        item.setOnAction(e->changeContent("base/password-panel","修改密码"));
         menu.getItems().add(item);
         item = new MenuItem();
         item.setText("课程资料");
-        item.setId("base/material-panel");
-        item.setOnAction(this::onLogoutMenuClick);
+        item.setOnAction(e->changeContent("base/material-panel","课程资料"));
         menu.getItems().add(item);
         item = new MenuItem();
         item.setText("项目文档");
-        item.setId("base/project-pdf-panel");
-        item.setOnAction(this::onLogoutMenuClick);
+        item.setOnAction(e -> changeContent("base/project-pdf-panel", "项目文档"));
         menu.getItems().add(item);
         item = new MenuItem();
         item.setText("项目视频");
-        item.setId("base/project-media-panel");
-        item.setOnAction(this::onLogoutMenuClick);
+        item.setOnAction(e -> changeContent("base/project-media-panel", "项目视频"));
         menu.getItems().add(item);
         if(role.equals("ROLE_STUDENT") || role.equals("ROLE_TEACHER")) {
             if(role.equals("ROLE_STUDENT")) {
                 item = new MenuItem();
                 item.setText("团队信息");
-                item.setId("student-team-panel");
-                item.setOnAction(this::changeContent);
+                item.setOnAction(e -> changeContent("student-team-panel", "团队信息"));
                 menu.getItems().add(item);
             }
             item = new MenuItem();
             item.setText("个人画像");
-            if(role.equals("ROLE_STUDENT")) {
-                item.setId("student-introduce-panel");
-                item.setOnAction(this::changeContent);
-            }
-            else {
-                item.setId("teacher-introduce-panel");
-                item.setOnAction(this::changeContent);
-            }
+            if(role.equals("ROLE_STUDENT"))
+                item.setOnAction(e -> changeContent("student-introduce-panel", "个人画像"));
+            else
+                item.setOnAction(e -> changeContent("teacher-introduce-panel", "个人画像"));
             menu.getItems().add(item);
         }
         item = new MenuItem();
@@ -120,26 +87,22 @@ public class MainFrameController {
         if(role.equals("ROLE_ADMIN")) {
             menu = new Menu("系统管理");
             item = new MenuItem();
-            item.setId("base/menu-panel");
             item.setText("菜单管理");
-            item.setOnAction(this::changeContent);
+            item.setOnAction(e -> changeContent("base/menu-panel", "菜单管理"));
             menu.getItems().add(item);
             item = new MenuItem();
             item.setText("字典管理");
-            item.setId("base/dictionary-panel");
-            item.setOnAction(this::changeContent);
+            item.setOnAction(e -> changeContent("base/dictionary-panel", "字典管理"));
             menu.getItems().add(item);
             item = new MenuItem();
-            item.setId("base/html-edit_panel");
             item.setText("Html编辑");
-            item.setOnAction(this::changeContent);
+            item.setOnAction(e -> changeContent("base/html-edit_panel", "HTML编辑"));
             menu.getItems().add(item);
             menuBar.getMenus().add(menu);
             menu = new Menu("示例程序");
             item = new MenuItem();
-            item.setId("base/control-demo-panel");
             item.setText("组件示例");
-            item.setOnAction(this::changeContent);
+            item.setOnAction(e->changeContent("base/control-demo-panel","组件示例"));
             menu.getItems().add(item);
             menuBar.getMenus().add(menu);
         }
@@ -177,20 +140,25 @@ public class MainFrameController {
         List<Map> mList = (List<Map>)res.getData();
         int i,j;
         Map m;
+        String title;
         List<Map> sList;
         for(i = 0; i < mList.size();i++) {
             m = mList.get(i);
+            menu = new Menu((String)m.get("title"));
             sList = (List<Map>)m.get("sList");
-            menu = new Menu();
-            menu.setText((String)m.get("title"));
-            if(sList != null && sList.size()> 0) {
-                addMenuItems(menu,sList);
+            if(sList != null) {
+                for (j = 0; j < sList.size(); j++) {
+                    Map ms = sList.get(j);
+                    item = new MenuItem();
+                    item.setText( (String)ms.get("title"));
+                    item.setOnAction(e -> changeContent((String) ms.get("name"), (String)ms.get("title")));
+                    menu.getItems().add(item);
+                }
             }
             menuBar.getMenus().add(menu);
         }
         contentTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
     }
-
 
     /**
      * 点击菜单栏中的“退出”菜单，执行onLogoutMenuClick方法 加载登录页面，切换回登录界面
@@ -211,16 +179,7 @@ public class MainFrameController {
      * @param name  菜单名 name.fxml 对应面板的配置文件
      * @param title 菜单标题 工作区中的TablePane的标题
      */
-    protected  void changeContent(ActionEvent ae) {
-        Object obj = ae.getSource();
-        String name= null, title= null;
-        if(obj instanceof MenuItem) {
-            MenuItem item = (MenuItem)obj;
-            name = item.getId();
-            title = item.getText();
-        }
-        if(name == null)
-            return;
+    protected  void changeContent(String name, String title) {
         Tab tab = tabMap.get(name);
         Scene scene;
         Object c;

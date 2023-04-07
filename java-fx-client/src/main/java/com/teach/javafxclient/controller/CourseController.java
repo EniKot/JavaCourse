@@ -5,5 +5,4 @@ package com.teach.javafxclient.controller;
  *  @FXML 方法 对应于fxml文件中的 on***Click的属性
  */
 public class CourseController {
-
 }

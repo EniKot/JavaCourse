@@ -47,4 +47,12 @@ public class Student {
     @ManyToMany(mappedBy = "students")
     @JoinTable(name="student_course",joinColumns = @JoinColumn(name= "student_id"),inverseJoinColumns = @JoinColumn(name="course_id"))
     List<Course> courses;
+    //关系人1的信息 ：名字、与学生本人的关系、联系方式
+    private String firstRelName;
+    private String firstRel;
+    private String firstTel;
+    //关系人2的信息 ：名字、与学生本人的关系、联系方式
+    private String secondRelName;
+    private String secondRel;
+    private String secondTel;
 }

@@ -25,7 +25,7 @@ public class Award {
 
     @ManyToOne
     @JoinColumn(name="person_id")
-    private Person persont;
+    private Person person;
 
     @ManyToOne
     @JoinColumn(name="teacher_id")

@@ -1,10 +1,7 @@
 package org.fatmansoft.teach.controllers;
 
 
-import org.fatmansoft.teach.models.Course;
-import org.fatmansoft.teach.models.Person;
-import org.fatmansoft.teach.models.Student;
-import org.fatmansoft.teach.models.Teacher;
+import org.fatmansoft.teach.models.*;
 import org.fatmansoft.teach.payload.request.DataRequest;
 import org.fatmansoft.teach.payload.response.DataResponse;
 import org.fatmansoft.teach.repository.*;
@@ -17,10 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -76,7 +70,7 @@ public class TeacherController {
             return m;
 
         m.put("school",t.getSchool());
-        m.put("institute",t.getInsititute());
+        m.put("institute",t.getInstitute());
         p = t.getPerson();
         if(p == null)
             return m;
@@ -106,6 +100,26 @@ public class TeacherController {
         }
         return dataList;
     }
+    //将获取到这个老师教的课程，转换成list<map>
+
+    public List getTeacherCourseMapList(List<Course> courseList){
+        List list=new ArrayList();
+        if(courseList == null || courseList.size() == 0){
+            return list;
+        }
+        Map map;
+        List data=new ArrayList();
+        for(Course c:courseList){
+            map=new HashMap();
+            map.put("courseNum",c.getNum());
+            map.put("courseName",c.getName());
+            map.put("duration","Week "+c.getStartWeek()+"~"+c.getEndWeek());
+            map.put("credit",c.getCredit());
+            data.add(map);
+        }
+        return data;
+
+    }
 
     @PostMapping("/getTeacherList")
     @PreAuthorize("hasRole('ADMIN')")
@@ -118,32 +132,148 @@ public class TeacherController {
     @PostMapping("/teacherDelete")
     @PreAuthorize(" hasRole('ADMIN')")
     public  DataResponse teacherDelete(@Valid @RequestBody DataRequest dataRequest){
+        Integer teacherId=dataRequest.getInteger("teacherId");
+        Teacher t=null;
+        Optional<Teacher> op;
+        if(teacherId !=null){
+            op=teacherRepository.findById(teacherId);
+            if(op.isPresent()){
+                t=op.get();
+            }
+        }
 
+        if(t!=null){
+            Person p=t.getPerson();
+            Optional<User> uOp=userRepository.findByPersonPersonId(p.getPersonId());
+            if(uOp.isPresent()){
+                userRepository.delete(uOp.get());
+            }
+            teacherRepository.delete(t);
+            personRepository.delete(p);
+        }
+        return CommonMethod.getReturnMessageOK();
     }
 
     @PostMapping("/getTeacherInfo")
     @PreAuthorize("hasRole('ADMIN')")
     public DataResponse getTeacherInfo(@Valid @RequestBody DataRequest dataRequest) {
-
+        Integer teacherId=dataRequest.getInteger("teacherId");
+        Teacher t=null;
+        Optional<Teacher> op;
+        if(teacherId !=null){
+            op=teacherRepository.findById(teacherId);
+            if(op.isPresent()){
+                t=op.get();
+            }
+        }
+        return CommonMethod.getReturnData(getMapFromTeacher(t));
     }
 
     @PostMapping("/teacherEditSave")
     @PreAuthorize(" hasRole('ADMIN')")
     public DataResponse teacherEditSave(@Valid @RequestBody DataRequest dataRequest) {
-
+        Integer teacherId = dataRequest.getInteger("teacherId");
+        Map form = dataRequest.getMap("form"); //参数获取Map对象
+        String num = CommonMethod.getString(form,"num");  //Map 获取属性的值
+        Teacher t= null;
+        Person p;
+        User u;
+        Optional<Teacher> op;
+        Integer personId;
+        if(teacherId != null) {
+            op= teacherRepository.findById(teacherId);  //查询对应数据库中主键为id的值的实体对象
+            if(op.isPresent()) {
+                t = op.get();
+            }
+        }
+        Optional<Person> nOp = personRepository.findByNum(num); //查询是否存在num的人员
+        if(nOp.isPresent()) {
+            if(t == null || !t.getPerson().getNum().equals(num)) {
+                return CommonMethod.getReturnMessageError("新编号已经存在，不能添加或修改！");
+            }
+        }
+        if(t == null) {
+            personId = getNewPersonId();
+            p = new Person();
+            p.setPersonId(personId);
+            p.setNum(num);
+            p.setType("1");
+            personRepository.saveAndFlush(p);
+            String password = encoder.encode("123456");
+            u= new User();
+            u.setUserId(getNewUserId());
+            u.setPerson(p);
+            u.setUserName(num);
+            u.setPassword(password);
+            u.setUserType(userTypeRepository.findByName(EUserType.ROLE_TEACHER));
+            userRepository.saveAndFlush(u);
+            t = new Teacher();
+            t.setTeacherId(getNewTeacherId());
+            t.setPerson(p);
+            teacherRepository.saveAndFlush(t);
+        }else {
+            p = t.getPerson();
+            personId = p.getPersonId();
+        }
+        if(!num.equals(p.getNum())) {
+            Optional<User>uOp = userRepository.findByPersonPersonId(personId);
+            if(uOp.isPresent()) {
+                u = uOp.get();
+                u.setUserName(num);
+                userRepository.saveAndFlush(u);
+            }
+            p.setNum(num);  //设置属性
+        }
+        p.setName((String)form.get("name"));
+        p.setDept(CommonMethod.getString(form,"dept"));
+        p.setCard(CommonMethod.getString(form,"card"));
+        p.setGender(CommonMethod.getString(form,"gender"));
+        p.setBirthday(CommonMethod.getString(form,"birthday"));
+        p.setEmail(CommonMethod.getString(form,"email"));
+        p.setPhone(CommonMethod.getString(form,"phone"));
+        p.setAddress(CommonMethod.getString(form,"address"));
+        personRepository.save(p);  // 修改保存人员信息
+        t.setSchool(CommonMethod.getString(form,"school"));
+        t.setInstitute(CommonMethod.getString(form,"institute"));
+        teacherRepository.save(t);  //修改保存学生信息
+        return CommonMethod.getReturnData(t.getTeacherId());
     }
 
-    public List getTeacherCourseList(List<Course> courseList){
 
-    }
     @PostMapping("/getTeacherIntroduceData")
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_ADMIN')")
     public DataResponse getTeacherIntroduceData(@Valid @RequestBody DataRequest dataRequest) {
-
+        Integer userId = CommonMethod.getUserId();
+        Optional<User> uOp = userRepository.findByUserId(userId);
+        if(!uOp.isPresent()){
+            return CommonMethod.getReturnMessageError("用户不存在！");
+        }
+        User u=uOp.get();
+        Optional<Teacher> tOp= teacherRepository.findByPersonPersonId(u.getPerson().getPersonId());
+        if(!tOp.isPresent()){
+            return CommonMethod.getReturnMessageError("教师不存在！");
+        }
+        Teacher t=tOp.get();
+        Map info=getMapFromTeacher(t);
+        Map data=new HashMap();
+        List<Course> cList=t.getTeaches();
+        data.put("info",info);
+        data.put("courseTeaches",getTeacherCourseMapList(cList));
+        return  CommonMethod.getReturnData(data);
     }
     @PostMapping("/saveTeacherIntroduce")
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    @PreAuthorize("hasRole('ROLE_TEACHER') or hasRole('ROLE_ADMIN')")
     public DataResponse saveTeacherIntroduce(@Valid @RequestBody DataRequest dataRequest) {
-
+        Integer teacherId=dataRequest.getInteger("teacherId");
+        String introduce = dataRequest.getString("introduce");
+        Optional<Teacher> tOp=teacherRepository.findById(teacherId);
+        if(!tOp.isPresent()){
+            return CommonMethod.getReturnMessageError("老师不存在！");
+        }
+        Teacher t=tOp.get();
+        Person p=t.getPerson();
+        p.setIntroduce(introduce);
+        personRepository.save(p);
+        return CommonMethod.getReturnMessageOK();
     }
 }

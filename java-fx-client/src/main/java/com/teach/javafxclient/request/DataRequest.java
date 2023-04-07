@@ -26,7 +26,6 @@ public class DataRequest {
     public Object get(String key){
         return data.get(key);
     }
-
     public String getString(String key){
         Object obj = data.get(key);
         if(obj == null)
@@ -57,8 +56,6 @@ public class DataRequest {
             return new ArrayList();
     }
     public Map getMap(String key){
-        if(data == null)
-            return new HashMap();
         Object obj = data.get(key);
         if(obj == null)
             return new HashMap();
@@ -69,8 +66,6 @@ public class DataRequest {
     }
 
     public Integer getInteger(String key) {
-        if(data == null)
-            return null;
         Object obj = data.get(key);
         if(obj == null)
             return null;
@@ -78,14 +73,12 @@ public class DataRequest {
             return (Integer)obj;
         String str = obj.toString();
         try {
-            return (int)Double.parseDouble(str);
+            return Integer.getInteger(str);
         }catch(Exception e) {
             return null;
         }
     }
     public Long getLong(String key) {
-        if(data == null)
-            return null;
         Object obj = data.get(key);
         if(obj == null)
             return null;
@@ -93,15 +86,13 @@ public class DataRequest {
             return (Long)obj;
         String str = obj.toString();
         try {
-            return Long.parseLong(str);
+            return Long.getLong(str);
         }catch(Exception e) {
             return null;
         }
     }
 
     public Double getDouble(String key) {
-        if(data == null)
-            return null;
         Object obj = data.get(key);
         if(obj == null)
             return null;

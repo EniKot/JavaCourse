@@ -12,6 +12,7 @@ import org.fatmansoft.teach.repository.ScoreRepository;
 import org.fatmansoft.teach.repository.StudentRepository;
 import org.fatmansoft.teach.util.CommonMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,6 +22,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/score")
 public class ScoreController {
+
     @Autowired
     private CourseRepository courseRepository;
     @Autowired
@@ -78,6 +80,7 @@ public class ScoreController {
         return CommonMethod.getReturnData(dataList);
     }
     @PostMapping("/scoreSave")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse scoreSave(@Valid @RequestBody DataRequest dataRequest) {
         Integer studentId = dataRequest.getInteger("studentId");
         Integer courseId = dataRequest.getInteger("courseId");
@@ -100,6 +103,7 @@ public class ScoreController {
         return CommonMethod.getReturnMessageOK();
     }
     @PostMapping("/scoreDelete")
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResponse scoreDelete(@Valid @RequestBody DataRequest dataRequest) {
         Integer scoreId = dataRequest.getInteger("scoreId");
         Optional<Score> op;

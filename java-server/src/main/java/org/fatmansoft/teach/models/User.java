@@ -31,7 +31,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "user_type_id")
     private UserType userType;
 

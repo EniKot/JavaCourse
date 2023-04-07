@@ -3,6 +3,7 @@ package org.fatmansoft.teach.repository;
 import org.fatmansoft.teach.models.DictionaryInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 /**
@@ -12,6 +13,7 @@ import java.util.List;
  * List<DictionaryInfo> findByPid(Integer pid); 查询获取pid的子数据字典集合  命名规范
  * List<DictionaryInfo>getDictionaryInfoList(String code);查询父节点字典值为code的所有的数据字典集合  SQL原生查询
  */
+@Repository
 public interface DictionaryInfoRepository extends JpaRepository<DictionaryInfo,Integer> {
     @Query(value = "select max(id) from DictionaryInfo  ")
     Integer getMaxId();

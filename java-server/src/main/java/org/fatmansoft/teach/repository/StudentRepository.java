@@ -3,6 +3,7 @@ package org.fatmansoft.teach.repository;
 import org.fatmansoft.teach.models.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * List<Student> findByPersonName(String name); 根据关联的Person的name查询获得List<Student>对象集合  可能存在相同姓名的多个学生 命名规范
  * List<Student> findStudentListByNumName(String numName); 根据输入的参数 如果参数为空，查询所有的学生，输入参数不为空，查询学号或姓名包含输入参数串的所有学生集合
  */
-
+@Repository
 public interface StudentRepository extends JpaRepository<Student,Integer> {
     @Query(value = "select max(studentId) from Student  ")
     Integer getMaxId();

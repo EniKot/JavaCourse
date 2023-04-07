@@ -119,6 +119,13 @@ public class StudentController {
             return m;
         m.put("major",s.getMajor());
         m.put("className",s.getClassName());
+        m.put("politicalStatus",s.getPoliticalStatus());
+        m.put("firstRelName",s.getFirstRelName());
+        m.put("firstRel",s.getFirstRel());
+        m.put("firstRelTel",s.getFirstTel());
+        m.put("secondRelName",s.getSecondRelName());
+        m.put("secondRel",s.getSecondRel());
+        m.put("secondRelTel",s.getSecondTel());
         p = s.getPerson();
         if(p == null)
             return m;
@@ -306,7 +313,7 @@ public class StudentController {
      * @param sList
      * @return
      */
-    public List getStudentScoreList(List<Score>sList){
+    public List getStudentScoreList(List<Score> sList){
         List list = new ArrayList();
         if(sList == null || sList.size() == 0)
             return list;
@@ -389,7 +396,7 @@ public class StudentController {
      */
 
     @PostMapping("/getStudentIntroduceData")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_STUDENT')")
     public DataResponse getStudentIntroduceData(@Valid @RequestBody DataRequest dataRequest) {
         Integer userId = CommonMethod.getUserId();
         Optional<User> uOp = userRepository.findByUserId(userId);  // 查询获得 user对象
@@ -417,7 +424,7 @@ public class StudentController {
      */
 
     @PostMapping("/saveStudentIntroduce")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_STUDENT')")
     public DataResponse saveStudentIntroduce(@Valid @RequestBody DataRequest dataRequest) {
         Integer studentId = dataRequest.getInteger("studentId");
         String introduce = dataRequest.getString("introduce");

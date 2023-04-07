@@ -3,6 +3,7 @@ package org.fatmansoft.teach.repository;
 import org.fatmansoft.teach.models.MenuInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 /**
@@ -12,6 +13,7 @@ import java.util.List;
  * List<MenuInfo> findByUserTypeId(Integer userTypeId); 根据userTypeId查询获得pid为空的 菜单List<MenuInfo>集合 查询相应角色的所有跟菜单 JPQL 注解
  * List<MenuInfo> findByUserTypeIdAndPid(Integer userTypeId, Integer pid);根据userTypeId和pid查询获得pid的所有子菜单List<MenuInfo>集合 命名规范
  */
+@Repository
 public interface MenuInfoRepository extends JpaRepository<MenuInfo,Integer> {
     @Query(value = "select max(id) from MenuInfo  ")
     Integer getMaxId();

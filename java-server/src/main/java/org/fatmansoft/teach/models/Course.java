@@ -34,9 +34,13 @@ public class Course {
 
     @Size(max = 50)
     private String name;
+
+    private String textBook;
+    private Integer startWeek;
+    private Integer endWeek;
     private Integer credit;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="teacher_id")
     private Teacher teacher;
 
